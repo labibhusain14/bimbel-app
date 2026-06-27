@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import JoinClassModal from "@/components/JoinClassModal";
 
 // ── SVG Icon Components ────────────────────────────────────────
 const IconBook = () => (
@@ -82,6 +83,12 @@ const stats = [
 // ── Page ───────────────────────────────────────────────────────
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState<"kelas" | "pengumuman">("kelas");
+  const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
+
+  const handleJoinClass = (classCode: string) => {
+    console.log("Joining class with code:", classCode);
+    alert(`Berhasil bergabung dengan kelas! (Kode: ${classCode})`);
+  };
 
   return (
     <div className="px-4 sm:px-6 py-6">
@@ -183,7 +190,7 @@ export default function DashboardPage() {
             </Link>
           ))}
 
-          <button className="bg-white rounded-2xl border-2 border-dashed border-gray-200 hover:border-purple-300 hover:bg-purple-50/50 transition-all duration-200 flex flex-col items-center justify-center gap-3 min-h-[200px] group">
+          <button onClick={() => setIsJoinModalOpen(true)} className="bg-white rounded-2xl border-2 border-dashed border-gray-200 hover:border-purple-300 hover:bg-purple-50/50 transition-all duration-200 flex flex-col items-center justify-center gap-3 min-h-[200px] group">
             <div className="w-12 h-12 rounded-full bg-purple-100 group-hover:bg-purple-200 flex items-center justify-center transition-colors">
               <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
             </div>
@@ -212,6 +219,13 @@ export default function DashboardPage() {
           ))}
         </div>
       )}
+
+      {/* Join Class Modal */}
+      <JoinClassModal
+        isOpen={isJoinModalOpen}
+        onClose={() => setIsJoinModalOpen(false)}
+        onJoin={handleJoinClass}
+      />
     </div>
   );
 }

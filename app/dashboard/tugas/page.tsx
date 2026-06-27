@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import SubmitTaskModal, { SubmissionData } from "@/components/SubmitTaskModal";
 
 // ── Icons ───────────────────────────────────────────────────────
 const IconClock = () => (
@@ -71,6 +72,38 @@ const colorMap: Record<string, { bg: string, border: string, text: string }> = {
 // ── Component ──────────────────────────────────────────────────
 export default function TugasPage() {
   const [activeTab, setActiveTab] = useState<"pending" | "selesai">("pending");
+  const [selectedTask, setSelectedTask] = useState<typeof dummyTasks[0] | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleOpenModal = (task: typeof dummyTasks[0]) => {
+    setSelectedTask(task);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedTask(null);
+  };
+
+  const handleTaskSubmit = async (data: SubmissionData) => {
+    try {
+      // Simulate API call
+      console.log("Submitting task:", data);
+      
+      // Here you would normally send the data to your backend
+      // await fetch("/api/tasks/submit", {
+      //   method: "POST",
+      //   body: FormData with file and notes
+      // })
+
+      // Show success message
+      alert(`Tugas "${selectedTask?.title}" berhasil dikumpulkan!`);
+      handleCloseModal();
+    } catch (error) {
+      console.error("Error submitting task:", error);
+      alert("Gagal mengirim tugas. Silakan coba lagi.");
+    }
+  };
 
   const filteredTasks = useMemo(() => {
     if (activeTab === "pending") {
@@ -192,7 +225,10 @@ export default function TugasPage() {
 
                   {/* Buttons */}
                   {(task.status === "pending" || task.status === "late") && (
-                    <button className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors shadow-sm shadow-purple-200">
+                    <button
+                      onClick={() => handleOpenModal(task)}
+                      className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors shadow-sm shadow-purple-200"
+                    >
                       <IconUpload />
                       Kumpulkan
                     </button>
@@ -210,6 +246,18 @@ export default function TugasPage() {
         </div>
       )}
 
+      {/* Modal */}
+      <SubmitTaskModal
+        isOpen={isModalOpen}
+        task={selectedTask ? {
+          id: selectedTask.id,
+          title: selectedTask.title,
+          course: selectedTask.course,
+          deadline: selectedTask.deadline,
+        } : undefined}
+        onClose={handleCloseModal}
+        onSubmit={handleTaskSubmit}
+      />
     </div>
   );
 }
