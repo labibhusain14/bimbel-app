@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { motion, Variants } from "framer-motion";
 
 const programs = [
   {
@@ -48,6 +49,26 @@ const stats = [
   { value: "4.9 ★", label: "Rating Kepuasan" },
 ];
 
+const staggerContainer: Variants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15
+    }
+  }
+};
+
+const fadeUpVariant: Variants = {
+  hidden: { opacity: 0, y: 30 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
+};
+
+const scaleInVariant: Variants = {
+  hidden: { opacity: 0, scale: 0.8 },
+  show: { opacity: 1, scale: 1, transition: { duration: 0.6, ease: "easeOut" } }
+};
+
 export default function LandingPage() {
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -57,7 +78,13 @@ export default function LandingPage() {
       {/* ── Navbar ── */}
       <nav className="bg-white px-5 py-3 flex items-center justify-between shadow-sm sticky top-0 z-50">
         <Link href="/" className="flex items-center gap-2 shrink-0">
-          <div className="w-7 h-7 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm">G</div>
+          <motion.div 
+            whileHover={{ rotate: 180 }}
+            transition={{ duration: 0.3 }}
+            className="w-7 h-7 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm"
+          >
+            G
+          </motion.div>
           <span className="text-purple-600 font-bold text-base sm:text-lg">ghaitsmartedu</span>
         </Link>
 
@@ -71,7 +98,9 @@ export default function LandingPage() {
 
         <div className="hidden md:flex items-center gap-3">
           <Link href="/login" className="text-gray-700 hover:text-purple-600 text-sm font-medium transition-colors">Login</Link>
-          <Link href="/signup" className="bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">Sign Up</Link>
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <Link href="/signup" className="bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">Sign Up</Link>
+          </motion.div>
         </div>
 
         <button onClick={() => setMenuOpen(!menuOpen)} className="md:hidden flex flex-col gap-1.5 p-1 rounded" aria-label="Toggle menu">
@@ -81,7 +110,11 @@ export default function LandingPage() {
         </button>
 
         {menuOpen && (
-          <div className="md:hidden absolute top-full left-0 right-0 bg-white border-t border-gray-100 shadow-lg px-5 py-4 flex flex-col gap-4">
+          <motion.div 
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="md:hidden absolute top-full left-0 right-0 bg-white border-t border-gray-100 shadow-lg px-5 py-4 flex flex-col gap-4"
+          >
             {["Programs", "Tutors", "Pricing"].map((item) => (
               <Link key={item} href={`/${item.toLowerCase()}`} className="text-gray-700 hover:text-purple-600 text-sm font-medium" onClick={() => setMenuOpen(false)}>{item}</Link>
             ))}
@@ -90,147 +123,219 @@ export default function LandingPage() {
               <Link href="/login" className="flex-1 text-center border border-purple-600 text-purple-600 text-sm font-semibold py-2 rounded-lg hover:bg-purple-50 transition-colors" onClick={() => setMenuOpen(false)}>Login</Link>
               <Link href="/signup" className="flex-1 text-center bg-purple-600 text-white text-sm font-semibold py-2 rounded-lg hover:bg-purple-700 transition-colors" onClick={() => setMenuOpen(false)}>Sign Up</Link>
             </div>
-          </div>
+          </motion.div>
         )}
       </nav>
 
       {/* ── Hero Section ── */}
-      <section className="bg-gray-50 px-5 py-12 md:py-16 lg:py-20">
+      <section className="bg-gray-50 px-5 py-12 md:py-16 lg:py-20 overflow-hidden">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-10 md:gap-8">
 
           {/* Left */}
-          <div className="flex-1 max-w-xl">
-            <span className="inline-flex items-center gap-1.5 bg-purple-100 text-purple-700 text-xs font-semibold px-3 py-1.5 rounded-full mb-5">
+          <motion.div 
+            variants={staggerContainer}
+            initial="hidden"
+            animate="show"
+            className="flex-1 max-w-xl"
+          >
+            <motion.span variants={fadeUpVariant} className="inline-flex items-center gap-1.5 bg-purple-100 text-purple-700 text-xs font-semibold px-3 py-1.5 rounded-full mb-5">
               <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
               Platform Belajar Generasi Baru
-            </span>
+            </motion.span>
 
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 leading-tight mb-5">
+            <motion.h1 variants={fadeUpVariant} className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 leading-tight mb-5">
               Buka Potensi<br />Kreatifmu Bersama{" "}
               <span className="text-purple-600">Tutor<br />Terbaik</span>
-            </h1>
+            </motion.h1>
 
-            <p className="text-gray-500 text-sm sm:text-base leading-relaxed mb-8 max-w-md">
+            <motion.p variants={fadeUpVariant} className="text-gray-500 text-sm sm:text-base leading-relaxed mb-8 max-w-md">
               Pengalaman belajar yang dipersonalisasi untuk siswa modern. Kembangkan bakatmu dalam desain, teknologi, dan seni dengan bimbingan eksklusif.
-            </p>
+            </motion.p>
 
-            <div className="flex flex-wrap gap-3">
-              <Link href="/signup" className="bg-purple-600 hover:bg-purple-700 text-white font-semibold px-5 py-3 rounded-lg text-sm transition-all duration-200 shadow-md hover:shadow-lg flex items-center gap-2">
-                Mulai Belajar Sekarang
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
+            <motion.div variants={fadeUpVariant} className="flex flex-wrap gap-3">
+              <Link href="/signup">
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="bg-purple-600 hover:bg-purple-700 text-white font-semibold px-5 py-3 rounded-lg text-sm transition-all duration-200 shadow-md hover:shadow-lg flex items-center gap-2">
+                  Mulai Belajar Sekarang
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
+                </motion.div>
               </Link>
-              <Link href="/programs" className="border border-gray-300 hover:border-purple-400 text-gray-700 hover:text-purple-600 font-semibold px-5 py-3 rounded-lg text-sm transition-all duration-200">
-                Lihat Program
+              <Link href="/programs">
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="border border-gray-300 hover:border-purple-400 text-gray-700 hover:text-purple-600 font-semibold px-5 py-3 rounded-lg text-sm transition-all duration-200">
+                  Lihat Program
+                </motion.div>
               </Link>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
 
           {/* Right — visual cards */}
-          <div className="flex-1 w-full max-w-lg grid grid-cols-2 gap-3">
+          <motion.div 
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="flex-1 w-full max-w-lg grid grid-cols-2 gap-3 relative"
+          >
             {/* Main illustration card */}
-            <div className="col-span-2 md:col-span-1 row-span-2 bg-gradient-to-br from-amber-100 to-orange-100 rounded-2xl overflow-hidden min-h-[220px] flex flex-col items-center justify-center relative">
+            <motion.div 
+              animate={{ y: [0, -10, 0] }}
+              transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+              className="col-span-2 md:col-span-1 row-span-2 bg-gradient-to-br from-amber-100 to-orange-100 rounded-2xl overflow-hidden min-h-[220px] flex flex-col items-center justify-center relative shadow-sm"
+            >
               <div className="absolute inset-0 flex items-center justify-center opacity-20">
                 <svg className="w-40 h-40 text-orange-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
               </div>
               {/* Stylized people illustration */}
               <div className="relative z-10 flex flex-col items-center gap-3 p-6">
                 <div className="flex gap-2 items-end">
-                  <div className="w-10 h-14 bg-orange-300 rounded-xl flex items-end justify-center pb-1">
+                  <motion.div whileHover={{ scale: 1.1, y: -5 }} className="w-10 h-14 bg-orange-300 rounded-xl flex items-end justify-center pb-1 cursor-pointer">
                     <div className="w-6 h-6 bg-orange-500 rounded-full" />
-                  </div>
-                  <div className="w-12 h-16 bg-purple-300 rounded-xl flex items-end justify-center pb-1">
+                  </motion.div>
+                  <motion.div whileHover={{ scale: 1.1, y: -5 }} className="w-12 h-16 bg-purple-300 rounded-xl flex items-end justify-center pb-1 cursor-pointer">
                     <div className="w-7 h-7 bg-purple-600 rounded-full" />
-                  </div>
-                  <div className="w-10 h-12 bg-blue-200 rounded-xl flex items-end justify-center pb-1">
+                  </motion.div>
+                  <motion.div whileHover={{ scale: 1.1, y: -5 }} className="w-10 h-12 bg-blue-200 rounded-xl flex items-end justify-center pb-1 cursor-pointer">
                     <div className="w-6 h-6 bg-blue-500 rounded-full" />
-                  </div>
+                  </motion.div>
                 </div>
                 <div className="w-32 h-2 bg-orange-200 rounded-full" />
                 <div className="w-24 h-2 bg-orange-100 rounded-full" />
                 <span className="text-orange-700 font-semibold text-xs mt-1">Sesi Belajar Interaktif</span>
               </div>
-            </div>
+            </motion.div>
 
             {/* Creative Tools card */}
-            <div className="bg-purple-600 rounded-2xl p-5 flex flex-col items-center justify-center text-white text-center min-h-[120px] gap-2">
+            <motion.div 
+              animate={{ y: [0, 8, 0] }}
+              transition={{ repeat: Infinity, duration: 5, ease: "easeInOut", delay: 1 }}
+              className="bg-purple-600 rounded-2xl p-5 flex flex-col items-center justify-center text-white text-center min-h-[120px] gap-2 shadow-sm"
+            >
               <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
               <span className="text-sm font-bold">Creative Tools</span>
-            </div>
+            </motion.div>
 
             {/* Tutor card */}
-            <div className="bg-gray-900 rounded-2xl p-5 flex flex-col justify-between min-h-[120px]">
+            <motion.div 
+              animate={{ y: [0, -5, 0] }}
+              transition={{ repeat: Infinity, duration: 4.5, ease: "easeInOut", delay: 0.5 }}
+              className="bg-gray-900 rounded-2xl p-5 flex flex-col justify-between min-h-[120px] shadow-sm"
+            >
               <div className="flex gap-1.5">
                 <div className="w-7 h-7 rounded-full bg-purple-400" />
-                <div className="w-7 h-7 rounded-full bg-amber-300 -ml-2" />
-                <div className="w-7 h-7 rounded-full bg-pink-400 -ml-2" />
+                <div className="w-7 h-7 rounded-full bg-amber-300 -ml-2 border border-gray-900" />
+                <div className="w-7 h-7 rounded-full bg-pink-400 -ml-2 border border-gray-900" />
               </div>
               <div>
                 <p className="text-white text-xs font-bold">500+ Tutor Berpengalaman</p>
                 <p className="text-gray-400 text-xs mt-0.5">Siap membimbing Anda</p>
               </div>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 
       {/* ── Stats ── */}
-      <section className="bg-white border-y border-gray-100 py-8 px-5">
+      <motion.section 
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, margin: "-50px" }}
+        variants={staggerContainer}
+        className="bg-white border-y border-gray-100 py-8 px-5"
+      >
         <div className="max-w-3xl mx-auto grid grid-cols-3 gap-4 text-center">
           {stats.map((s) => (
-            <div key={s.label}>
+            <motion.div variants={scaleInVariant} key={s.label}>
               <p className="text-2xl sm:text-3xl font-extrabold text-purple-600">{s.value}</p>
               <p className="text-xs sm:text-sm text-gray-500 mt-1 uppercase tracking-wide font-medium">{s.label}</p>
-            </div>
+            </motion.div>
           ))}
         </div>
-      </section>
+      </motion.section>
 
       {/* ── Programs Section ── */}
-      <section className="py-14 px-5 bg-gray-50">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-10">
+      <section className="py-14 px-5 bg-gray-50 overflow-hidden">
+        <motion.div 
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={staggerContainer}
+          className="max-w-5xl mx-auto"
+        >
+          <motion.div variants={fadeUpVariant} className="text-center mb-10">
             <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900">Program Unggulan Kami</h2>
             <p className="text-gray-500 text-sm sm:text-base mt-3 max-w-md mx-auto">
               Pilih dari berbagai kelas yang dirancang khusus untuk mengembangkan keterampilan kreatif di era digital.
             </p>
-          </div>
+          </motion.div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {programs.map((p) => (
-              <div key={p.title} className="bg-white rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow duration-200 flex flex-col gap-3 border border-gray-100 group">
-                <div className="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center group-hover:bg-purple-100 transition-colors">
+              <motion.div 
+                key={p.title} 
+                variants={fadeUpVariant}
+                whileHover={{ scale: 1.03, y: -5 }}
+                className="bg-white rounded-2xl p-5 shadow-sm hover:shadow-xl transition-shadow duration-300 flex flex-col gap-3 border border-gray-100 group cursor-pointer"
+              >
+                <motion.div 
+                  whileHover={{ rotate: 10 }}
+                  className="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center group-hover:bg-purple-100 transition-colors"
+                >
                   {p.icon}
-                </div>
+                </motion.div>
                 <h3 className="font-bold text-gray-900 text-sm">{p.title}</h3>
                 <p className="text-gray-500 text-xs leading-relaxed flex-1">{p.desc}</p>
                 <Link href="/programs" className="text-purple-600 hover:text-purple-700 text-xs font-semibold flex items-center gap-1 transition-colors">
                   Pelajari Selengkapnya
-                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+                  <motion.svg 
+                    whileHover={{ x: 3 }}
+                    className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </motion.svg>
                 </Link>
-              </div>
+              </motion.div>
             ))}
           </div>
-        </div>
+        </motion.div>
       </section>
 
       {/* ── CTA Section ── */}
       <section className="py-14 px-5 bg-white">
-        <div className="max-w-3xl mx-auto">
-          <div className="bg-purple-600 rounded-3xl px-8 py-12 text-center text-white relative overflow-hidden">
+        <motion.div 
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true }}
+          variants={scaleInVariant}
+          className="max-w-3xl mx-auto"
+        >
+          <div className="bg-purple-600 rounded-3xl px-8 py-12 text-center text-white relative overflow-hidden shadow-2xl">
             {/* Decorative circles */}
-            <div className="absolute -top-12 -left-12 w-40 h-40 rounded-full bg-purple-500 opacity-40" />
-            <div className="absolute -bottom-12 -right-12 w-52 h-52 rounded-full bg-purple-700 opacity-30" />
+            <motion.div 
+              animate={{ rotate: 360 }} 
+              transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+              className="absolute -top-12 -left-12 w-40 h-40 rounded-full bg-purple-500 opacity-40 origin-center" 
+            />
+            <motion.div 
+              animate={{ scale: [1, 1.2, 1] }} 
+              transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute -bottom-12 -right-12 w-52 h-52 rounded-full bg-purple-700 opacity-30" 
+            />
+            
             <div className="relative z-10">
               <h2 className="text-2xl sm:text-3xl font-extrabold mb-3">Ready to Start?</h2>
               <p className="text-purple-200 text-sm sm:text-base max-w-sm mx-auto mb-8">
                 Bergabunglah dengan ribuan siswa lainnya dan mulai perjalanan kreatifmu hari ini. Pendaftaran gratis!
               </p>
-              <Link href="/signup" className="inline-block bg-white text-purple-600 font-bold px-7 py-3 rounded-xl hover:bg-purple-50 transition-colors text-sm shadow-lg">
-                Daftar Gratis
+              <Link href="/signup">
+                <motion.div 
+                  whileHover={{ scale: 1.05 }} 
+                  whileTap={{ scale: 0.95 }}
+                  className="inline-block bg-white text-purple-600 font-bold px-7 py-3 rounded-xl hover:bg-purple-50 transition-colors text-sm shadow-lg"
+                >
+                  Daftar Gratis
+                </motion.div>
               </Link>
             </div>
           </div>
-        </div>
+        </motion.div>
       </section>
 
       {/* ── Footer ── */}
