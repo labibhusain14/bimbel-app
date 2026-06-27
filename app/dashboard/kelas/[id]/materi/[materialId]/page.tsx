@@ -22,7 +22,7 @@ export default async function MaterialDetailPage({ params }: { params: Promise<{
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
         <div className="mb-4 flex items-center gap-3">
-          <Link href={`/dashboard/kelas/${params.id}`} className="text-sm text-gray-500 hover:text-gray-700">← Kembali</Link>
+          <Link href={`/dashboard/kelas/${id}`} className="text-sm text-gray-500 hover:text-gray-700">← Kembali</Link>
         </div>
 
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
