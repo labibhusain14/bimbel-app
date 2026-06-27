@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import SubmitTaskModal, { SubmissionData } from "@/components/SubmitTaskModal";
+import { getTugasData, submitTugas, TaskItem } from "@/app/actions/tugas";
 
 // ── Icons ───────────────────────────────────────────────────────
 const IconClock = () => (
@@ -13,12 +14,6 @@ const IconClock = () => (
 const IconCheckCircle = () => (
   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-  </svg>
-);
-
-const IconAlert = () => (
-  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
   </svg>
 );
 
@@ -34,33 +29,7 @@ const IconFile = () => (
   </svg>
 );
 
-// ── Dummy Data ──────────────────────────────────────────────────
-type TaskStatus = "pending" | "late" | "submitted" | "graded";
-
-interface TaskItem {
-  id: number;
-  title: string;
-  course: string;
-  deadline: string; // "Besok, 23:59"
-  deadlineDate: Date;
-  status: TaskStatus;
-  score?: number;
-  accent: string;
-}
-
-const dummyTasks: TaskItem[] = [
-  // Belum Selesai (Pending/Late)
-  { id: 1, title: "Prototype Low-Fidelity E-Commerce", course: "Desain UI/UX Profesional", deadline: "Hari ini, 23:59", deadlineDate: new Date(Date.now() + 8 * 3600000), status: "pending", accent: "violet" },
-  { id: 2, title: "Implementasi React Context API", course: "Pemrograman Web Modern", deadline: "Besok, 12:00", deadlineDate: new Date(Date.now() + 24 * 3600000), status: "pending", accent: "teal" },
-  { id: 3, title: "Esai: Masa Depan AI di Pendidikan", course: "Menulis Kreatif & Copywriting", deadline: "Kemarin, 23:59", deadlineDate: new Date(Date.now() - 24 * 3600000), status: "late", accent: "rose" },
-  
-  // Selesai (Submitted/Graded)
-  { id: 4, title: "Latihan Tenses & Grammar", course: "Bahasa Inggris Intensif", deadline: "3 Hari Lalu", deadlineDate: new Date(Date.now() - 72 * 3600000), status: "graded", score: 95, accent: "amber" },
-  { id: 5, title: "Vector Art Karakter", course: "Ilustrasi Digital", deadline: "Minggu Lalu", deadlineDate: new Date(Date.now() - 168 * 3600000), status: "submitted", accent: "indigo" },
-  { id: 6, title: "Analisis Dataset Titanic", course: "Data Science Dasar", deadline: "Minggu Lalu", deadlineDate: new Date(Date.now() - 200 * 3600000), status: "graded", score: 88, accent: "emerald" },
-];
-
-const colorMap: Record<string, { bg: string, border: string, text: string }> = {
+const colorMap: Record<string, { bg: string; border: string; text: string }> = {
   violet:  { bg: "bg-violet-50",  border: "border-violet-200",  text: "text-violet-700" },
   teal:    { bg: "bg-teal-50",    border: "border-teal-200",    text: "text-teal-700" },
   rose:    { bg: "bg-rose-50",    border: "border-rose-200",    text: "text-rose-700" },
@@ -72,10 +41,19 @@ const colorMap: Record<string, { bg: string, border: string, text: string }> = {
 // ── Component ──────────────────────────────────────────────────
 export default function TugasPage() {
   const [activeTab, setActiveTab] = useState<"pending" | "selesai">("pending");
-  const [selectedTask, setSelectedTask] = useState<typeof dummyTasks[0] | null>(null);
+  const [selectedTask, setSelectedTask] = useState<TaskItem | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [tasks, setTasks] = useState<TaskItem[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleOpenModal = (task: typeof dummyTasks[0]) => {
+  useEffect(() => {
+    getTugasData().then((data) => {
+      if (data) setTasks(data.tasks);
+      setLoading(false);
+    });
+  }, []);
+
+  const handleOpenModal = (task: TaskItem) => {
     setSelectedTask(task);
     setIsModalOpen(true);
   };
@@ -86,39 +64,45 @@ export default function TugasPage() {
   };
 
   const handleTaskSubmit = async (data: SubmissionData) => {
+    if (!selectedTask) return;
     try {
-      // Simulate API call
-      console.log("Submitting task:", data);
-      
-      // Here you would normally send the data to your backend
-      // await fetch("/api/tasks/submit", {
-      //   method: "POST",
-      //   body: FormData with file and notes
-      // })
-
-      // Show success message
-      alert(`Tugas "${selectedTask?.title}" berhasil dikumpulkan!`);
+      const result = await submitTugas(selectedTask.assignmentId, data.notes || "");
+      if (result.error) {
+        alert(`Gagal: ${result.error}`);
+        return;
+      }
+      // Optimistically update status
+      setTasks((prev) =>
+        prev.map((t) =>
+          t.id === selectedTask.id ? { ...t, status: "submitted" as const } : t
+        )
+      );
+      alert(`Tugas "${selectedTask.title}" berhasil dikumpulkan!`);
       handleCloseModal();
-    } catch (error) {
-      console.error("Error submitting task:", error);
+    } catch (err) {
+      console.error(err);
       alert("Gagal mengirim tugas. Silakan coba lagi.");
     }
   };
 
   const filteredTasks = useMemo(() => {
     if (activeTab === "pending") {
-      return dummyTasks.filter(t => t.status === "pending" || t.status === "late").sort((a, b) => a.deadlineDate.getTime() - b.deadlineDate.getTime());
+      return tasks
+        .filter((t) => t.status === "pending" || t.status === "late")
+        .sort((a, b) => new Date(a.deadlineDate).getTime() - new Date(b.deadlineDate).getTime());
     } else {
-      return dummyTasks.filter(t => t.status === "submitted" || t.status === "graded").sort((a, b) => b.deadlineDate.getTime() - a.deadlineDate.getTime());
+      return tasks
+        .filter((t) => t.status === "submitted" || t.status === "graded")
+        .sort((a, b) => new Date(b.deadlineDate).getTime() - new Date(a.deadlineDate).getTime());
     }
-  }, [activeTab]);
+  }, [activeTab, tasks]);
 
-  const pendingCount = dummyTasks.filter(t => t.status === "pending" || t.status === "late").length;
-  const selesaiCount = dummyTasks.length - pendingCount;
+  const pendingCount = tasks.filter((t) => t.status === "pending" || t.status === "late").length;
+  const selesaiCount = tasks.filter((t) => t.status === "submitted" || t.status === "graded").length;
 
   return (
     <div className="px-4 sm:px-6 py-6 max-w-4xl mx-auto">
-      
+
       {/* ── Page Header ── */}
       <div className="mb-6">
         <h1 className="text-2xl font-extrabold text-gray-900">Daftar Tugas</h1>
@@ -128,49 +112,65 @@ export default function TugasPage() {
       {/* ── Tabs & Filter ── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div className="flex items-center gap-1 bg-white border border-gray-200 rounded-xl p-1 shadow-sm w-fit">
-          <button onClick={() => setActiveTab("pending")} className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center gap-2 ${activeTab === "pending" ? "bg-purple-50 text-purple-700 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}>
+          <button
+            onClick={() => setActiveTab("pending")}
+            className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center gap-2 ${activeTab === "pending" ? "bg-purple-50 text-purple-700 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
+          >
             Belum Selesai
             <span className={`text-xs px-1.5 py-0.5 rounded-full ${activeTab === "pending" ? "bg-purple-600 text-white" : "bg-gray-200 text-gray-600"}`}>
-              {pendingCount}
+              {loading ? "..." : pendingCount}
             </span>
           </button>
-          <button onClick={() => setActiveTab("selesai")} className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center gap-2 ${activeTab === "selesai" ? "bg-purple-50 text-purple-700 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}>
+          <button
+            onClick={() => setActiveTab("selesai")}
+            className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center gap-2 ${activeTab === "selesai" ? "bg-purple-50 text-purple-700 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
+          >
             Selesai
             <span className={`text-xs px-1.5 py-0.5 rounded-full ${activeTab === "selesai" ? "bg-purple-600 text-white" : "bg-gray-200 text-gray-600"}`}>
-              {selesaiCount}
+              {loading ? "..." : selesaiCount}
             </span>
           </button>
         </div>
 
-        {/* Dropdown Filter Simulasi */}
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium text-gray-500">Urutkan:</span>
           <select className="bg-white border border-gray-200 text-gray-700 text-sm font-semibold rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent shadow-sm">
             <option>Tenggat Terdekat</option>
-            <option>Paling Baru Ditambahkan</option>
+            <option>Paling Baru</option>
             <option>Berdasarkan Kelas</option>
           </select>
         </div>
       </div>
 
       {/* ── Task List ── */}
-      {filteredTasks.length === 0 ? (
+      {loading ? (
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm py-16 flex flex-col items-center justify-center text-center">
-          <div className="w-16 h-16 rounded-full bg-green-50 flex items-center justify-center mb-4">
+          <div className="w-10 h-10 rounded-full border-4 border-purple-200 border-t-purple-600 animate-spin mb-4" />
+          <p className="text-sm text-gray-400">Memuat tugas dari database...</p>
+        </div>
+      ) : filteredTasks.length === 0 ? (
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm py-16 flex flex-col items-center justify-center text-center">
+          <div className="w-16 h-16 rounded-full bg-green-50 flex items-center justify-center mb-4 text-green-500">
             <IconCheckCircle />
           </div>
-          <p className="text-base font-bold text-gray-800">Semua tugas sudah selesai!</p>
-          <p className="text-sm text-gray-400 mt-1">Kamu bisa bersantai atau baca materi tambahan.</p>
+          <p className="text-base font-bold text-gray-800">
+            {activeTab === "pending" ? "Semua tugas sudah selesai!" : "Belum ada tugas yang dikumpulkan."}
+          </p>
+          <p className="text-sm text-gray-400 mt-1">
+            {activeTab === "pending" ? "Kamu bisa bersantai atau baca materi tambahan." : "Kumpulkan tugas yang tersedia di tab Belum Selesai."}
+          </p>
         </div>
       ) : (
         <div className="flex flex-col gap-4">
           {filteredTasks.map((task) => {
-            const colors = colorMap[task.accent];
+            const colors = colorMap[task.accent] ?? colorMap.violet;
             const isLate = task.status === "late";
-            
+
             return (
-              <div key={task.id} className={`bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-shadow group flex flex-col sm:flex-row gap-5 sm:items-center ${isLate ? "border-l-4 border-l-red-500" : ""}`}>
-                
+              <div
+                key={task.id}
+                className={`bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-shadow group flex flex-col sm:flex-row gap-5 sm:items-center ${isLate ? "border-l-4 border-l-red-500" : ""}`}
+              >
                 {/* Icon Circle */}
                 <div className={`hidden sm:flex w-12 h-12 rounded-xl items-center justify-center shrink-0 ${colors.bg} ${colors.text}`}>
                   <IconFile />
@@ -183,7 +183,7 @@ export default function TugasPage() {
                       {task.course}
                     </span>
                     {isLate && (
-                      <span className="text-[10px] bg-red-100 text-red-700 font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                      <span className="text-[10px] bg-red-100 text-red-700 font-bold px-2 py-0.5 rounded-full">
                         Terlambat
                       </span>
                     )}
@@ -191,7 +191,10 @@ export default function TugasPage() {
                   <h3 className="text-base font-bold text-gray-900 truncate mb-2 group-hover:text-purple-700 transition-colors">
                     {task.title}
                   </h3>
-                  
+                  {task.description && (
+                    <p className="text-xs text-gray-400 mb-2 line-clamp-1">{task.description}</p>
+                  )}
+
                   {/* Deadline row */}
                   <div className="flex items-center gap-4 text-xs font-medium">
                     <div className={`flex items-center gap-1.5 ${isLate ? "text-red-600" : "text-gray-500"}`}>
@@ -215,8 +218,8 @@ export default function TugasPage() {
 
                 {/* Actions */}
                 <div className="shrink-0 pt-3 sm:pt-0 border-t sm:border-t-0 border-gray-100 mt-2 sm:mt-0 flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto">
-                  {/* Score Display */}
-                  {task.status === "graded" && (
+                  {/* Score */}
+                  {task.status === "graded" && task.score != null && (
                     <div className="text-center sm:text-right px-4">
                       <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Nilai</p>
                       <p className="text-xl font-extrabold text-green-600 leading-none">{task.score}</p>
@@ -233,7 +236,7 @@ export default function TugasPage() {
                       Kumpulkan
                     </button>
                   )}
-                  
+
                   {(task.status === "submitted" || task.status === "graded") && (
                     <button className="flex-1 sm:flex-none bg-gray-50 hover:bg-gray-100 border border-gray-200 text-gray-700 text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors">
                       Lihat Detail

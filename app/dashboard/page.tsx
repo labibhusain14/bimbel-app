@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import JoinClassModal from "@/components/JoinClassModal";
+import { getDashboardData } from "@/app/actions/dashboard";
 
 // ── SVG Icon Components ────────────────────────────────────────
 const IconBook = () => (
@@ -57,33 +58,47 @@ const IconChart = ({ className = "w-8 h-8" }: { className?: string }) => (
   </svg>
 );
 
-// ── Sample data ────────────────────────────────────────────────
-const courses = [
-  { id: 1, title: "Desain UI/UX Profesional", teacher: "Rina Kusumawati", category: "Seni & Desain", gradient: "from-violet-500 to-purple-700", accent: "bg-violet-500", initial: "R", students: 42, tasks: 3, CourseIcon: IconPalette },
-  { id: 2, title: "Pemrograman Web Modern", teacher: "Budi Santoso", category: "Pemrograman", gradient: "from-cyan-500 to-teal-600", accent: "bg-teal-500", initial: "B", students: 38, tasks: 5, CourseIcon: IconCode },
-  { id: 3, title: "Menulis Kreatif & Copywriting", teacher: "Sari Dewi", category: "Menulis", gradient: "from-rose-500 to-pink-600", accent: "bg-rose-500", initial: "S", students: 29, tasks: 2, CourseIcon: IconPen },
-  { id: 4, title: "Bahasa Inggris Intensif", teacher: "Ahmad Fauzan", category: "Bahasa", gradient: "from-amber-500 to-orange-600", accent: "bg-amber-500", initial: "A", students: 55, tasks: 7, CourseIcon: IconGlobe },
-  { id: 5, title: "Ilustrasi Digital", teacher: "Maya Putri", category: "Seni & Desain", gradient: "from-indigo-500 to-blue-600", accent: "bg-indigo-500", initial: "M", students: 31, tasks: 1, CourseIcon: IconBrush },
-  { id: 6, title: "Data Science Dasar", teacher: "Reza Pratama", category: "Pemrograman", gradient: "from-emerald-500 to-green-600", accent: "bg-emerald-500", initial: "R", students: 47, tasks: 4, CourseIcon: IconChart },
-];
-
-const announcements = [
-  { id: 1, course: "Desain UI/UX Profesional", teacher: "Rina Kusumawati", message: "Tugas minggu ini: buat prototype low-fidelity untuk aplikasi e-commerce. Deadline Jumat 23:59.", time: "2 jam lalu", accent: "border-violet-400", dot: "bg-violet-500" },
-  { id: 2, course: "Pemrograman Web Modern", teacher: "Budi Santoso", message: "Materi baru sudah diunggah: React Hooks & State Management. Silakan dipelajari sebelum sesi besok.", time: "5 jam lalu", accent: "border-teal-400", dot: "bg-teal-500" },
-  { id: 3, course: "Bahasa Inggris Intensif", teacher: "Ahmad Fauzan", message: "Reminder: Ujian tengah semester minggu depan. Materi dari chapter 1–5.", time: "1 hari lalu", accent: "border-amber-400", dot: "bg-amber-500" },
-];
-
-const stats = [
-  { label: "Kelas Aktif", value: "6", Icon: IconBook, color: "text-purple-700", bg: "bg-purple-50", border: "border-purple-100" },
-  { label: "Tugas Pending", value: "12", Icon: IconClipboard, color: "text-amber-700", bg: "bg-amber-50", border: "border-amber-100" },
-  { label: "Selesai", value: "38", Icon: IconCheck, color: "text-emerald-700", bg: "bg-emerald-50", border: "border-emerald-100" },
-  { label: "Sertifikat", value: "2", Icon: IconAward, color: "text-blue-700", bg: "bg-blue-50", border: "border-blue-100" },
-];
-
 // ── Page ───────────────────────────────────────────────────────
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState<"kelas" | "pengumuman">("kelas");
   const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
+  const [dbData, setDbData] = useState<any>(null);
+
+  useEffect(() => {
+    getDashboardData().then(data => {
+      if (data) setDbData(data);
+    });
+  }, []);
+
+  const getCourseIcon = (category: string) => {
+    if (category.includes("Pemrograman")) return IconCode;
+    if (category.includes("Menulis")) return IconPen;
+    if (category.includes("Bahasa")) return IconGlobe;
+    if (category.includes("Desain")) return IconBrush;
+    return IconPalette;
+  };
+
+  const displayCourses = dbData?.courses.map((c: any) => ({
+    ...c,
+    CourseIcon: getCourseIcon(c.category)
+  })) ?? [];
+
+  const displayAnnouncements = dbData?.announcements ?? [];
+
+  const pendingTaskCount = dbData?.pendingTaskCount ?? 0;
+  const activeCount = dbData?.stats?.active ?? 0;
+  const completedCount = dbData?.stats?.completed ?? 0;
+  const certificateCount = dbData?.certificateCount ?? 0;
+
+  const displayStats = [
+    { label: "Kelas Aktif", value: activeCount, Icon: IconBook, color: "text-purple-700", bg: "bg-purple-50", border: "border-purple-100" },
+    { label: "Tugas Pending", value: pendingTaskCount, Icon: IconClipboard, color: "text-amber-700", bg: "bg-amber-50", border: "border-amber-100" },
+    { label: "Selesai", value: completedCount, Icon: IconCheck, color: "text-emerald-700", bg: "bg-emerald-50", border: "border-emerald-100" },
+    { label: "Sertifikat", value: certificateCount, Icon: IconAward, color: "text-blue-700", bg: "bg-blue-50", border: "border-blue-100" },
+  ];
+
+  const userName = dbData?.user?.full_name || "...";
+  const loading = !dbData;
 
   const handleJoinClass = (classCode: string) => {
     console.log("Joining class with code:", classCode);
@@ -91,7 +106,7 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="px-4 sm:px-6 py-6">
+    <div className="px-4 sm:px-6 py-6 max-w-4xl mx-auto">
 
       {/* Welcome Banner */}
       <div className="relative bg-gradient-to-r from-purple-600 via-purple-700 to-indigo-700 rounded-2xl p-6 mb-6 overflow-hidden shadow-lg">
@@ -99,8 +114,14 @@ export default function DashboardPage() {
         <div className="absolute bottom-0 left-1/3 w-32 h-32 rounded-full bg-white/5 translate-y-1/2" />
         <div className="relative z-10">
           <p className="text-purple-200 text-sm font-medium mb-1">Selamat datang kembali</p>
-          <h1 className="text-white text-xl sm:text-2xl font-extrabold mb-1">Mohammad Labib</h1>
-          <p className="text-purple-300 text-sm">Kamu punya <span className="text-white font-semibold">12 tugas</span> yang perlu diselesaikan minggu ini</p>
+          <h1 className="text-white text-xl sm:text-2xl font-extrabold mb-1">
+            {loading ? <span className="opacity-50">Memuat...</span> : userName}
+          </h1>
+          {pendingTaskCount > 0 ? (
+            <p className="text-purple-300 text-sm">Kamu punya <span className="text-white font-semibold">{pendingTaskCount} tugas</span> yang belum dikumpulkan</p>
+          ) : (
+            <p className="text-purple-300 text-sm">Semangat belajar hari ini! Mari lanjutkan progres kelasmu.</p>
+          )}
           <div className="flex flex-wrap gap-3 mt-4">
             <Link href="/dashboard/tugas" className="bg-white text-purple-700 font-semibold text-xs px-4 py-2 rounded-lg hover:bg-purple-50 transition-colors shadow-sm">
               Lihat Tugas →
@@ -114,7 +135,7 @@ export default function DashboardPage() {
 
       {/* Stats Row */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-        {stats.map((s) => (
+        {displayStats.map((s) => (
           <div key={s.label} className={`bg-white border ${s.border} rounded-2xl px-4 py-4 flex items-center gap-3 shadow-sm hover:shadow-md transition-shadow`}>
             <div className={`${s.bg} ${s.color} p-2.5 rounded-xl shrink-0`}>
               <s.Icon />
@@ -141,7 +162,7 @@ export default function DashboardPage() {
       {/* Kelas Cards */}
       {activeTab === "kelas" && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {courses.map((course) => (
+          {displayCourses.map((course: any) => (
             <Link key={course.id} href={`/dashboard/kelas/${course.id}`}
               className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-200 group border border-gray-100 hover:-translate-y-0.5"
             >
@@ -202,7 +223,7 @@ export default function DashboardPage() {
       {/* Pengumuman */}
       {activeTab === "pengumuman" && (
         <div className="flex flex-col gap-4 max-w-2xl">
-          {announcements.map((ann) => (
+          {displayAnnouncements.map((ann: any) => (
             <div key={ann.id} className={`bg-white rounded-2xl p-5 border-l-4 ${ann.accent} shadow-sm hover:shadow-md transition-shadow`}>
               <div className="flex items-start gap-3">
                 <div className={`w-2.5 h-2.5 rounded-full ${ann.dot} mt-1.5 shrink-0`} />

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getMaterialById } from "@/components/ClassTabs/materialData";
+import { getMaterialDetail } from "@/app/actions/kelas";
 
 // ── Icons ───────────────────────────────────────────────────────
 const IconChevronLeft = () => (
@@ -7,31 +7,26 @@ const IconChevronLeft = () => (
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
   </svg>
 );
-
 const IconPlay = () => (
   <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
     <path d="M8 5v14l11-7z" />
   </svg>
 );
-
 const IconDocument = () => (
   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
   </svg>
 );
-
 const IconLink = () => (
   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.658 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
   </svg>
 );
-
 const IconDownload = () => (
   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
   </svg>
 );
-
 const IconExternal = () => (
   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -40,7 +35,7 @@ const IconExternal = () => (
 
 export default async function MaterialDetailPage({ params }: { params: Promise<{ id: string; materialId: string }> }) {
   const { id, materialId } = await params;
-  const material = getMaterialById(Number(materialId));
+  const material = await getMaterialDetail(materialId);
 
   if (!material) {
     return (
@@ -70,10 +65,10 @@ export default async function MaterialDetailPage({ params }: { params: Promise<{
               <div className="flex items-center gap-3 mb-3">
                 <span className={`inline-block px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-md ${
                   material.type === "video" ? "bg-red-100 text-red-700" :
-                  material.type === "document" ? "bg-blue-100 text-blue-700" :
+                  material.type === "pdf" ? "bg-blue-100 text-blue-700" :
                   "bg-green-100 text-green-700"
                 }`}>
-                  {material.type === "video" ? "Video Pembelajaran" : material.type === "document" ? "Dokumen & Modul" : "Tautan Eksternal"}
+                  {material.type === "video" ? "Video Pembelajaran" : material.type === "pdf" ? "Dokumen PDF" : "Tautan Eksternal"}
                 </span>
               </div>
               <h1 className="text-3xl font-extrabold text-gray-900 leading-tight mb-2">
@@ -104,13 +99,13 @@ export default async function MaterialDetailPage({ params }: { params: Promise<{
                 </div>
               )}
 
-              {material.type === "document" && (
+              {material.type === "pdf" && (
                 <div className="w-full py-20 bg-blue-50/50 border-b border-blue-100 flex flex-col items-center justify-center text-blue-600">
                   <div className="w-20 h-20 bg-blue-100 rounded-2xl flex items-center justify-center mb-4 shadow-sm">
                     <IconDocument />
                   </div>
                   <h3 className="font-bold text-lg text-blue-900 mb-1">{material.title}</h3>
-                  <p className="text-sm font-medium text-blue-600/80">Dokumen PDF • {material.size}</p>
+                  <p className="text-sm font-medium text-blue-600/80">Dokumen PDF • 2.4 MB</p>
                 </div>
               )}
 
@@ -128,12 +123,12 @@ export default async function MaterialDetailPage({ params }: { params: Promise<{
               <div className="p-6 sm:p-8">
                 <h3 className="text-lg font-bold text-gray-900 mb-3">Deskripsi Materi</h3>
                 <p className="text-gray-600 leading-relaxed text-base">
-                  {material.description}
+                  {material.description || "Tidak ada deskripsi."}
                 </p>
                 
                 {/* Action Buttons below description */}
                 <div className="mt-8 pt-6 border-t border-gray-100 flex flex-wrap gap-3">
-                  {material.type === "document" && (
+                  {material.type === "pdf" && (
                     <button className="flex items-center gap-2 px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-xl transition-colors shadow-sm shadow-purple-200">
                       <IconDownload />
                       Unduh Dokumen
@@ -161,15 +156,13 @@ export default async function MaterialDetailPage({ params }: { params: Promise<{
               <ul className="space-y-4">
                 <li className="flex flex-col gap-1">
                   <span className="text-xs font-semibold text-gray-400">TANGGAL DIUNGGAH</span>
-                  <span className="text-sm font-medium text-gray-800">{material.uploadedAt}</span>
+                  <span className="text-sm font-medium text-gray-800">{material.date}</span>
                 </li>
                 
-                {material.size && (
-                  <li className="flex flex-col gap-1">
-                    <span className="text-xs font-semibold text-gray-400">UKURAN FILE</span>
-                    <span className="text-sm font-medium text-gray-800">{material.size}</span>
-                  </li>
-                )}
+                <li className="flex flex-col gap-1">
+                  <span className="text-xs font-semibold text-gray-400">UKURAN FILE</span>
+                  <span className="text-sm font-medium text-gray-800">2.4 MB</span>
+                </li>
 
                 <li className="flex flex-col gap-1">
                   <span className="text-xs font-semibold text-gray-400">TIPE KONTEN</span>

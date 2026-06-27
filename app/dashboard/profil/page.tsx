@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { getProfilData } from "@/app/actions/profil";
 
 // ── Icons ───────────────────────────────────────────────────────
 const IconEdit = () => (
@@ -36,19 +37,52 @@ const IconFire = () => (
   </svg>
 );
 
-// ── Dummy Data ──────────────────────────────────────────────────
-const certificates = [
-  { id: 1, title: "Desain UI/UX Profesional", date: "15 Mei 2026", score: "92", color: "from-violet-500 to-purple-700" },
-  { id: 2, title: "Dasar Pemrograman Web", date: "10 April 2026", score: "88", color: "from-cyan-500 to-teal-600" },
-];
-
 const achievements = [
   { id: 1, title: "Pembelajar Kilat", desc: "Selesaikan 5 tugas dalam 1 hari", icon: <IconFire />, bg: "bg-orange-100", text: "text-orange-600" },
   { id: 2, title: "Nilai Sempurna", desc: "Dapat nilai 100 di ujian akhir", icon: <IconTrophy />, bg: "bg-yellow-100", text: "text-yellow-600" },
 ];
 
+type ProfilData = {
+  full_name: string;
+  email: string;
+  phone: string;
+  join_date: string;
+  role: string;
+  school_name: string;
+  grade: string;
+  stats: {
+    activeClasses: number;
+    tasksCompleted: number;
+    averageScore: number;
+    totalHours: number;
+  };
+  certificates: any[];
+};
+
 export default function ProfilPage() {
   const [activeTab, setActiveTab] = useState<"ringkasan" | "sertifikat">("ringkasan");
+  const [data, setData] = useState<ProfilData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getProfilData().then((res) => {
+      setData(res);
+      setLoading(false);
+    });
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="px-4 sm:px-6 py-6 max-w-4xl mx-auto flex flex-col items-center justify-center min-h-[50vh]">
+        <div className="w-10 h-10 rounded-full border-4 border-purple-200 border-t-purple-600 animate-spin mb-4" />
+        <p className="text-sm text-gray-500">Memuat profil...</p>
+      </div>
+    );
+  }
+
+  if (!data) return null;
+
+  const initial = data.full_name ? data.full_name.charAt(0).toUpperCase() : "U";
 
   return (
     <div className="px-4 sm:px-6 py-6 max-w-4xl mx-auto">
@@ -63,9 +97,9 @@ export default function ProfilPage() {
         {/* Info Area */}
         <div className="px-6 pb-6 pt-0 flex flex-col sm:flex-row gap-6 sm:items-end relative -top-12">
           {/* Avatar */}
-          <div className="relative inline-block mx-auto sm:mx-0">
+          <div className="relative inline-block mx-auto sm:mx-0 shrink-0">
             <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full border-4 border-white bg-gradient-to-br from-purple-500 to-indigo-600 shadow-md flex items-center justify-center text-3xl font-bold text-white relative z-10">
-              M
+              {initial}
             </div>
             <button className="absolute bottom-1 right-1 bg-white p-2 rounded-full shadow-lg border border-gray-100 text-gray-600 hover:text-purple-600 hover:bg-gray-50 transition-colors z-20">
               <IconCamera />
@@ -74,26 +108,26 @@ export default function ProfilPage() {
 
           {/* Details */}
           <div className="flex-1 text-center sm:text-left mt-2 sm:mt-0 pt-12 sm:pt-0">
-            <h1 className="text-2xl font-extrabold text-gray-900">Mohammad Labib</h1>
-            <p className="text-gray-500 text-sm font-medium">Siswa Aktif • Bergabung sejak Jan 2026</p>
-            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4 mt-3">
+            <h1 className="text-2xl font-extrabold text-gray-900">{data.full_name}</h1>
+            <p className="text-gray-500 text-sm font-medium capitalize">{data.role} Aktif • Bergabung sejak {data.join_date}</p>
+            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 mt-3">
               <span className="flex items-center gap-1.5 text-xs font-semibold bg-purple-50 text-purple-700 px-3 py-1.5 rounded-full">
                 <span className="w-2 h-2 rounded-full bg-purple-600"></span>
-                Kelas 12 IPA
+                {data.grade}
               </span>
               <span className="flex items-center gap-1.5 text-xs font-semibold bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-full">
                 <span className="w-2 h-2 rounded-full bg-emerald-600"></span>
-                ID: GS-2026-0421
+                {data.school_name}
               </span>
             </div>
           </div>
 
           {/* Edit Button */}
           <div className="sm:self-end text-center sm:text-right mt-4 sm:mt-0 pt-12 sm:pt-0 pb-2">
-            <button className="inline-flex items-center gap-2 bg-gray-50 hover:bg-gray-100 text-gray-700 text-sm font-semibold px-4 py-2 rounded-xl transition-colors border border-gray-200">
+            <Link href="/dashboard/setelan" className="inline-flex items-center gap-2 bg-gray-50 hover:bg-gray-100 text-gray-700 text-sm font-semibold px-4 py-2 rounded-xl transition-colors border border-gray-200">
               <IconEdit />
               Edit Profil
-            </button>
+            </Link>
           </div>
         </div>
       </div>
@@ -117,19 +151,19 @@ export default function ProfilPage() {
               <h2 className="text-base font-bold text-gray-800 mb-4">Statistik Belajar</h2>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 <div className="bg-gray-50 rounded-xl p-4 text-center">
-                  <p className="text-3xl font-extrabold text-purple-600 mb-1">6</p>
+                  <p className="text-3xl font-extrabold text-purple-600 mb-1">{data.stats.activeClasses}</p>
                   <p className="text-xs font-semibold text-gray-500">Kelas Aktif</p>
                 </div>
                 <div className="bg-gray-50 rounded-xl p-4 text-center">
-                  <p className="text-3xl font-extrabold text-emerald-600 mb-1">38</p>
+                  <p className="text-3xl font-extrabold text-emerald-600 mb-1">{data.stats.tasksCompleted}</p>
                   <p className="text-xs font-semibold text-gray-500">Tugas Selesai</p>
                 </div>
                 <div className="bg-gray-50 rounded-xl p-4 text-center">
-                  <p className="text-3xl font-extrabold text-blue-600 mb-1">94</p>
+                  <p className="text-3xl font-extrabold text-blue-600 mb-1">{data.stats.averageScore}</p>
                   <p className="text-xs font-semibold text-gray-500">Rata-rata Nilai</p>
                 </div>
                 <div className="bg-gray-50 rounded-xl p-4 text-center">
-                  <p className="text-3xl font-extrabold text-amber-500 mb-1">12</p>
+                  <p className="text-3xl font-extrabold text-amber-500 mb-1">{data.stats.totalHours}</p>
                   <p className="text-xs font-semibold text-gray-500">Total Jam</p>
                 </div>
               </div>
@@ -141,19 +175,19 @@ export default function ProfilPage() {
               <div className="space-y-4">
                 <div className="grid grid-cols-3 gap-4">
                   <div className="col-span-1 text-sm font-semibold text-gray-500">Email</div>
-                  <div className="col-span-2 text-sm text-gray-800 font-medium">labib@example.com</div>
+                  <div className="col-span-2 text-sm text-gray-800 font-medium">{data.email}</div>
                 </div>
                 <div className="grid grid-cols-3 gap-4">
                   <div className="col-span-1 text-sm font-semibold text-gray-500">No. Telepon</div>
-                  <div className="col-span-2 text-sm text-gray-800 font-medium">+62 812 3456 7890</div>
+                  <div className="col-span-2 text-sm text-gray-800 font-medium">{data.phone}</div>
                 </div>
                 <div className="grid grid-cols-3 gap-4">
                   <div className="col-span-1 text-sm font-semibold text-gray-500">Asal Sekolah</div>
-                  <div className="col-span-2 text-sm text-gray-800 font-medium">SMA Negeri 1 Jakarta</div>
+                  <div className="col-span-2 text-sm text-gray-800 font-medium">{data.school_name}</div>
                 </div>
                 <div className="grid grid-cols-3 gap-4">
-                  <div className="col-span-1 text-sm font-semibold text-gray-500">Target Belajar</div>
-                  <div className="col-span-2 text-sm text-gray-800 font-medium">Lolos SNBT 2027 (Teknik Informatika)</div>
+                  <div className="col-span-1 text-sm font-semibold text-gray-500">Tingkat</div>
+                  <div className="col-span-2 text-sm text-gray-800 font-medium">{data.grade}</div>
                 </div>
               </div>
             </div>
@@ -194,41 +228,47 @@ export default function ProfilPage() {
               <IconCertificate />
               Sertifikat Kelulusan
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {certificates.map((cert) => (
-                <div key={cert.id} className="bg-white rounded-2xl p-1 shadow-sm border border-gray-100 hover:shadow-md transition-shadow group cursor-pointer">
-                  <div className={`bg-gradient-to-br ${cert.color} rounded-xl p-6 text-white relative overflow-hidden`}>
-                    <div className="absolute -right-4 -top-4 w-32 h-32 bg-white/10 rounded-full" />
-                    <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-black/10 rounded-full" />
-                    <div className="relative z-10 flex flex-col h-full justify-between gap-4">
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <p className="text-white/80 text-xs font-semibold uppercase tracking-wider mb-1">Sertifikat Kelulusan</p>
-                          <h3 className="text-xl font-bold">{cert.title}</h3>
+            {data.certificates.length === 0 ? (
+              <div className="bg-white border border-gray-100 rounded-2xl py-12 text-center shadow-sm">
+                <p className="text-gray-500 text-sm">Belum ada sertifikat yang diterbitkan.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {data.certificates.map((cert) => (
+                  <div key={cert.id} className="bg-white rounded-2xl p-1 shadow-sm border border-gray-100 hover:shadow-md transition-shadow group cursor-pointer">
+                    <div className={`bg-gradient-to-br ${cert.color} rounded-xl p-6 text-white relative overflow-hidden`}>
+                      <div className="absolute -right-4 -top-4 w-32 h-32 bg-white/10 rounded-full" />
+                      <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-black/10 rounded-full" />
+                      <div className="relative z-10 flex flex-col h-full justify-between gap-4">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <p className="text-white/80 text-xs font-semibold uppercase tracking-wider mb-1">Sertifikat Kelulusan</p>
+                            <h3 className="text-xl font-bold">{cert.title}</h3>
+                          </div>
+                          <IconCertificate />
                         </div>
-                        <IconCertificate />
-                      </div>
-                      <div className="flex justify-between items-end">
-                        <div>
-                          <p className="text-white/80 text-xs">Diterbitkan: {cert.date}</p>
-                          <p className="text-white/80 text-xs mt-0.5">Nilai Akhir: <span className="font-bold text-white">{cert.score}</span></p>
+                        <div className="flex justify-between items-end mt-4">
+                          <div>
+                            <p className="text-white/80 text-xs">Diterbitkan: {cert.date}</p>
+                            <p className="text-white/80 text-xs mt-0.5">Nilai Akhir: <span className="font-bold text-white">{cert.score}</span></p>
+                          </div>
+                          <button className="bg-white text-gray-900 text-xs font-bold px-3 py-1.5 rounded-lg shadow-sm group-hover:bg-gray-50 transition-colors">
+                            Unduh PDF
+                          </button>
                         </div>
-                        <button className="bg-white text-gray-900 text-xs font-bold px-3 py-1.5 rounded-lg shadow-sm group-hover:bg-gray-50 transition-colors">
-                          Unduh PDF
-                        </button>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Pencapaian / Badges */}
           <div>
             <h2 className="text-base font-bold text-gray-800 mb-4 flex items-center gap-2">
               <IconTrophy />
-              Badges Pencapaian
+              Badges Pencapaian (Contoh)
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {achievements.map((ach) => (
