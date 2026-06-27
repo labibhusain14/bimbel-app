@@ -59,25 +59,25 @@ const IconChart = ({ className = "w-8 h-8" }: { className?: string }) => (
 
 // ── Sample data ────────────────────────────────────────────────
 const courses = [
-  { id: 1, title: "Desain UI/UX Profesional",      teacher: "Rina Kusumawati", category: "Seni & Desain",  gradient: "from-violet-500 to-purple-700",  accent: "bg-violet-500",  initial: "R", students: 42, tasks: 3, CourseIcon: IconPalette },
-  { id: 2, title: "Pemrograman Web Modern",          teacher: "Budi Santoso",    category: "Pemrograman",    gradient: "from-cyan-500 to-teal-600",      accent: "bg-teal-500",    initial: "B", students: 38, tasks: 5, CourseIcon: IconCode    },
-  { id: 3, title: "Menulis Kreatif & Copywriting",   teacher: "Sari Dewi",       category: "Menulis",        gradient: "from-rose-500 to-pink-600",      accent: "bg-rose-500",    initial: "S", students: 29, tasks: 2, CourseIcon: IconPen     },
-  { id: 4, title: "Bahasa Inggris Intensif",         teacher: "Ahmad Fauzan",    category: "Bahasa",         gradient: "from-amber-500 to-orange-600",   accent: "bg-amber-500",   initial: "A", students: 55, tasks: 7, CourseIcon: IconGlobe   },
-  { id: 5, title: "Ilustrasi Digital",               teacher: "Maya Putri",      category: "Seni & Desain",  gradient: "from-indigo-500 to-blue-600",    accent: "bg-indigo-500",  initial: "M", students: 31, tasks: 1, CourseIcon: IconBrush   },
-  { id: 6, title: "Data Science Dasar",              teacher: "Reza Pratama",    category: "Pemrograman",    gradient: "from-emerald-500 to-green-600",  accent: "bg-emerald-500", initial: "R", students: 47, tasks: 4, CourseIcon: IconChart   },
+  { id: 1, title: "Desain UI/UX Profesional", teacher: "Rina Kusumawati", category: "Seni & Desain", gradient: "from-violet-500 to-purple-700", accent: "bg-violet-500", initial: "R", students: 42, tasks: 3, CourseIcon: IconPalette },
+  { id: 2, title: "Pemrograman Web Modern", teacher: "Budi Santoso", category: "Pemrograman", gradient: "from-cyan-500 to-teal-600", accent: "bg-teal-500", initial: "B", students: 38, tasks: 5, CourseIcon: IconCode },
+  { id: 3, title: "Menulis Kreatif & Copywriting", teacher: "Sari Dewi", category: "Menulis", gradient: "from-rose-500 to-pink-600", accent: "bg-rose-500", initial: "S", students: 29, tasks: 2, CourseIcon: IconPen },
+  { id: 4, title: "Bahasa Inggris Intensif", teacher: "Ahmad Fauzan", category: "Bahasa", gradient: "from-amber-500 to-orange-600", accent: "bg-amber-500", initial: "A", students: 55, tasks: 7, CourseIcon: IconGlobe },
+  { id: 5, title: "Ilustrasi Digital", teacher: "Maya Putri", category: "Seni & Desain", gradient: "from-indigo-500 to-blue-600", accent: "bg-indigo-500", initial: "M", students: 31, tasks: 1, CourseIcon: IconBrush },
+  { id: 6, title: "Data Science Dasar", teacher: "Reza Pratama", category: "Pemrograman", gradient: "from-emerald-500 to-green-600", accent: "bg-emerald-500", initial: "R", students: 47, tasks: 4, CourseIcon: IconChart },
 ];
 
 const announcements = [
-  { id: 1, course: "Desain UI/UX Profesional",  teacher: "Rina Kusumawati", message: "Tugas minggu ini: buat prototype low-fidelity untuk aplikasi e-commerce. Deadline Jumat 23:59.", time: "2 jam lalu",  accent: "border-violet-400", dot: "bg-violet-500" },
-  { id: 2, course: "Pemrograman Web Modern",     teacher: "Budi Santoso",    message: "Materi baru sudah diunggah: React Hooks & State Management. Silakan dipelajari sebelum sesi besok.", time: "5 jam lalu",  accent: "border-teal-400",   dot: "bg-teal-500"   },
-  { id: 3, course: "Bahasa Inggris Intensif",    teacher: "Ahmad Fauzan",    message: "Reminder: Ujian tengah semester minggu depan. Materi dari chapter 1–5.", time: "1 hari lalu", accent: "border-amber-400",  dot: "bg-amber-500"  },
+  { id: 1, course: "Desain UI/UX Profesional", teacher: "Rina Kusumawati", message: "Tugas minggu ini: buat prototype low-fidelity untuk aplikasi e-commerce. Deadline Jumat 23:59.", time: "2 jam lalu", accent: "border-violet-400", dot: "bg-violet-500" },
+  { id: 2, course: "Pemrograman Web Modern", teacher: "Budi Santoso", message: "Materi baru sudah diunggah: React Hooks & State Management. Silakan dipelajari sebelum sesi besok.", time: "5 jam lalu", accent: "border-teal-400", dot: "bg-teal-500" },
+  { id: 3, course: "Bahasa Inggris Intensif", teacher: "Ahmad Fauzan", message: "Reminder: Ujian tengah semester minggu depan. Materi dari chapter 1–5.", time: "1 hari lalu", accent: "border-amber-400", dot: "bg-amber-500" },
 ];
 
 const stats = [
-  { label: "Kelas Aktif",    value: "6",  Icon: IconBook,      color: "text-purple-700", bg: "bg-purple-50",  border: "border-purple-100"  },
-  { label: "Tugas Pending",  value: "12", Icon: IconClipboard, color: "text-amber-700",  bg: "bg-amber-50",   border: "border-amber-100"   },
-  { label: "Selesai",        value: "38", Icon: IconCheck,     color: "text-emerald-700",bg: "bg-emerald-50", border: "border-emerald-100" },
-  { label: "Sertifikat",     value: "2",  Icon: IconAward,     color: "text-blue-700",   bg: "bg-blue-50",    border: "border-blue-100"    },
+  { label: "Kelas Aktif", value: "6", Icon: IconBook, color: "text-purple-700", bg: "bg-purple-50", border: "border-purple-100" },
+  { label: "Tugas Pending", value: "12", Icon: IconClipboard, color: "text-amber-700", bg: "bg-amber-50", border: "border-amber-100" },
+  { label: "Selesai", value: "38", Icon: IconCheck, color: "text-emerald-700", bg: "bg-emerald-50", border: "border-emerald-100" },
+  { label: "Sertifikat", value: "2", Icon: IconAward, color: "text-blue-700", bg: "bg-blue-50", border: "border-blue-100" },
 ];
 
 // ── Page ───────────────────────────────────────────────────────

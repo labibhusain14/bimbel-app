@@ -87,13 +87,13 @@ export default function ClassDetailPage({ params }: { params: { id: string } }) 
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      
+
       {/* ── Header Banner ── */}
       <div className={`relative bg-gradient-to-r ${dummyClass.coverColor} pt-6 pb-24 px-4 sm:px-6 overflow-hidden`}>
         {/* Decorative elements */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/3 blur-2xl" />
         <div className="absolute bottom-0 left-10 w-40 h-40 bg-black/10 rounded-full translate-y-1/2 blur-xl" />
-        
+
         <div className="max-w-5xl mx-auto relative z-10">
           <button
             onClick={() => window.history.back()}
@@ -101,7 +101,7 @@ export default function ClassDetailPage({ params }: { params: { id: string } }) 
           >
             <IconChevronLeft /> Kembali
           </button>
-          
+
           <div className="flex flex-col sm:flex-row sm:items-end gap-6 justify-between">
             <div>
               <span className="inline-block px-3 py-1 bg-white/20 text-white text-xs font-bold rounded-full mb-3 backdrop-blur-sm border border-white/10">
@@ -124,7 +124,7 @@ export default function ClassDetailPage({ params }: { params: { id: string } }) 
       {/* ── Info Cards (Overlapping Banner) ── */}
       <div className="max-w-5xl mx-auto px-4 sm:px-6 -mt-16 relative z-20 w-full mb-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          
+
           {/* Main Info Card */}
           <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col justify-center">
             <p className="text-gray-600 text-sm leading-relaxed mb-6">
@@ -185,11 +185,10 @@ export default function ClassDetailPage({ params }: { params: { id: string } }) 
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 py-4 text-sm font-bold border-b-2 transition-all whitespace-nowrap ${
-                  activeTab === tab.id
+                className={`flex items-center gap-2 py-4 text-sm font-bold border-b-2 transition-all whitespace-nowrap ${activeTab === tab.id
                     ? "border-violet-600 text-violet-700"
                     : "border-transparent text-gray-500 hover:text-gray-800 hover:border-gray-300"
-                }`}
+                  }`}
               >
                 {tab.icon}
                 {tab.label}

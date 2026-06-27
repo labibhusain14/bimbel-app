@@ -39,12 +39,12 @@ const IconFire = () => (
 // ── Dummy Data ──────────────────────────────────────────────────
 const certificates = [
   { id: 1, title: "Desain UI/UX Profesional", date: "15 Mei 2026", score: "92", color: "from-violet-500 to-purple-700" },
-  { id: 2, title: "Dasar Pemrograman Web",    date: "10 April 2026", score: "88", color: "from-cyan-500 to-teal-600" },
+  { id: 2, title: "Dasar Pemrograman Web", date: "10 April 2026", score: "88", color: "from-cyan-500 to-teal-600" },
 ];
 
 const achievements = [
   { id: 1, title: "Pembelajar Kilat", desc: "Selesaikan 5 tugas dalam 1 hari", icon: <IconFire />, bg: "bg-orange-100", text: "text-orange-600" },
-  { id: 2, title: "Nilai Sempurna",   desc: "Dapat nilai 100 di ujian akhir", icon: <IconTrophy />, bg: "bg-yellow-100", text: "text-yellow-600" },
+  { id: 2, title: "Nilai Sempurna", desc: "Dapat nilai 100 di ujian akhir", icon: <IconTrophy />, bg: "bg-yellow-100", text: "text-yellow-600" },
 ];
 
 export default function ProfilPage() {
@@ -52,14 +52,14 @@ export default function ProfilPage() {
 
   return (
     <div className="px-4 sm:px-6 py-6 max-w-4xl mx-auto">
-      
+
       {/* ── Header Profil ── */}
       <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden mb-6 relative">
         {/* Banner */}
         <div className="h-32 bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600">
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/3" />
         </div>
-        
+
         {/* Info Area */}
         <div className="px-6 pb-6 pt-0 flex flex-col sm:flex-row gap-6 sm:items-end relative -top-12">
           {/* Avatar */}
@@ -166,7 +166,7 @@ export default function ProfilPage() {
                 Kehadiran
                 <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-bold">Bagus</span>
               </h2>
-              
+
               {/* Circular Progress (Fake) */}
               <div className="flex items-center justify-center py-4">
                 <div className="relative w-32 h-32 flex items-center justify-center">
