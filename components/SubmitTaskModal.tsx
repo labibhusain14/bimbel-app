@@ -5,7 +5,7 @@ import { useState, useRef } from "react";
 interface SubmitTaskModalProps {
   isOpen: boolean;
   task?: {
-    id: number;
+    id: string | number;
     title: string;
     course: string;
     deadline: string;
@@ -15,7 +15,7 @@ interface SubmitTaskModalProps {
 }
 
 export interface SubmissionData {
-  taskId: number;
+  taskId: string | number;
   file?: File;
   notes: string;
 }

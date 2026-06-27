@@ -42,10 +42,10 @@ export async function getClassDetail(classId: string) {
 
   if (!cls) return null;
 
-  const teacherName = Array.isArray(cls.users) ? cls.users[0]?.full_name : cls.users?.full_name || "Tidak ada guru";
-  const subjectName = Array.isArray(cls.subjects) ? cls.subjects[0]?.name : cls.subjects?.name || "Umum";
-  const description = Array.isArray(cls.subjects) ? cls.subjects[0]?.description : cls.subjects?.description || "Deskripsi kelas ini belum tersedia.";
-  const studentCount = cls.student_classrooms && Array.isArray(cls.student_classrooms) ? cls.student_classrooms[0]?.count || 0 : 0;
+  const teacherName = Array.isArray(cls.users) ? (cls.users[0] as any)?.full_name : (cls.users as any)?.full_name || "Tidak ada guru";
+  const subjectName = Array.isArray(cls.subjects) ? (cls.subjects[0] as any)?.name : (cls.subjects as any)?.name || "Umum";
+  const description = Array.isArray(cls.subjects) ? (cls.subjects[0] as any)?.description : (cls.subjects as any)?.description || "Deskripsi kelas ini belum tersedia.";
+  const studentCount = cls.student_classrooms && Array.isArray(cls.student_classrooms) ? (cls.student_classrooms[0] as any)?.count || 0 : 0;
 
   // 2. Map Materials and Tasks
   const materials: any[] = [];
@@ -182,9 +182,9 @@ export async function getMaterialDetail(materialId: string) {
   let className = "Kelas";
   let classId = "";
   if (data.classroom_meetings) {
-    const cls = Array.isArray(data.classroom_meetings.classrooms) 
-      ? data.classroom_meetings.classrooms[0] 
-      : data.classroom_meetings.classrooms;
+    const cls = Array.isArray((data.classroom_meetings as any).classrooms) 
+      ? (data.classroom_meetings as any).classrooms[0] 
+      : (data.classroom_meetings as any).classrooms;
     className = cls?.name || "Kelas";
     classId = cls?.id || "";
   }
