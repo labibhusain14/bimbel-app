@@ -83,14 +83,6 @@ export default function ClassTaskTab({ classId }: { classId: string }) {
 
   return (
     <div>
-      {/* Add Task Button */}
-      <div className="mb-6">
-        <button className="inline-flex items-center gap-2 px-6 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition-colors shadow-sm">
-          <IconPlus />
-          Tambah Tugas
-        </button>
-      </div>
-
       {/* Tasks List */}
       <div className="grid gap-4">
         {dummyTasks.map((task) => (

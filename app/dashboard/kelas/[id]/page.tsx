@@ -5,7 +5,7 @@ import ClassMaterialTab from "@/components/ClassTabs/MaterialTab";
 import ClassTaskTab from "@/components/ClassTabs/TaskTab";
 import ClassMembersTab from "@/components/ClassTabs/MembersTab";
 
-// Icons
+// ── Icons ───────────────────────────────────────────────────────
 const IconBook = () => (
   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C6.5 6.253 2 10.998 2 17.5S6.5 28.747 12 28.747s10-4.745 10-10.247S17.5 6.253 12 6.253z" />
@@ -26,7 +26,7 @@ const IconUsers = () => (
 
 const IconChevronLeft = () => (
   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
   </svg>
 );
 
@@ -35,18 +35,39 @@ const IconCalendar = () => (
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3M3 11h18M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
   </svg>
 );
-// Dummy data for class
+
+const IconClock = () => (
+  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+);
+
+const IconVideo = () => (
+  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+  </svg>
+);
+
+const IconLocation = () => (
+  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+  </svg>
+);
+
+// ── Dummy data for class ─────────────────────────────────────────
 const dummyClass = {
   id: "1",
   name: "Desain UI/UX Profesional",
   instructor: "Rina Kusumawati",
-  description: "Pelajari dasar-dasar desain UI/UX modern dengan tools profesional",
-  coverColor: "from-purple-500 to-purple-600",
+  description: "Pelajari dasar-dasar desain UI/UX modern dengan tools profesional seperti Figma dan prinsip-prinsip User Experience.",
+  coverColor: "from-violet-600 to-indigo-700",
+  badgeColor: "bg-violet-100 text-violet-700",
+  category: "Seni & Desain",
   icon: "R",
   students: 42,
   tasks: 3,
   materials: 12,
-  // Jadwal kelas: hari, waktu, lokasi/mode
   schedule: [
     { day: "Senin", time: "18:00 - 20:00", location: "Zoom (ID: 123-456)", mode: "Online" },
     { day: "Kamis", time: "18:00 - 20:00", location: "Ruang 201", mode: "Offline" },
@@ -61,82 +82,113 @@ export default function ClassDetailPage({ params }: { params: { id: string } }) 
   const tabs: { id: TabType; label: string; icon: React.ReactNode }[] = [
     { id: "materi", label: "Materi", icon: <IconBook /> },
     { id: "tugas", label: "Tugas", icon: <IconCheckSquare /> },
-    { id: "orang", label: "Orang", icon: <IconUsers /> },
+    { id: "orang", label: "Anggota", icon: <IconUsers /> },
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className={`bg-gradient-to-br ${dummyClass.coverColor} text-white`}>
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
-          <div className="flex items-center gap-4 mb-6">
-            <button
-              onClick={() => window.history.back()}
-              className="p-2 hover:bg-white/20 rounded-lg transition-colors"
-              aria-label="Kembali"
-            >
-              <IconChevronLeft />
-            </button>
-            <div className="flex-1">
-              <h1 className="text-3xl font-bold mb-1">{dummyClass.name}</h1>
-              <p className="text-purple-100">{dummyClass.instructor}</p>
-            </div>
-          </div>
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      
+      {/* ── Header Banner ── */}
+      <div className={`relative bg-gradient-to-r ${dummyClass.coverColor} pt-6 pb-24 px-4 sm:px-6 overflow-hidden`}>
+        {/* Decorative elements */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/3 blur-2xl" />
+        <div className="absolute bottom-0 left-10 w-40 h-40 bg-black/10 rounded-full translate-y-1/2 blur-xl" />
+        
+        <div className="max-w-5xl mx-auto relative z-10">
+          <button
+            onClick={() => window.history.back()}
+            className="flex items-center gap-2 text-white/80 hover:text-white mb-6 transition-colors bg-white/10 hover:bg-white/20 w-fit px-3 py-1.5 rounded-xl text-sm font-medium"
+          >
+            <IconChevronLeft /> Kembali
+          </button>
           
-          <p className="text-purple-50 max-w-2xl">
-            {dummyClass.description}
-          </p>
-
-          {/* Stats */}
-          <div className="grid grid-cols-3 gap-4 mt-8">
-            <div className="bg-white/10 backdrop-blur rounded-lg p-4 border border-white/20">
-              <p className="text-purple-100 text-sm mb-1">Anggota</p>
-              <p className="text-2xl font-bold">{dummyClass.students}</p>
-            </div>
-            <div className="bg-white/10 backdrop-blur rounded-lg p-4 border border-white/20">
-              <p className="text-purple-100 text-sm mb-1">Materi</p>
-              <p className="text-2xl font-bold">{dummyClass.materials}</p>
-            </div>
-            <div className="bg-white/10 backdrop-blur rounded-lg p-4 border border-white/20">
-              <p className="text-purple-100 text-sm mb-1">Tugas</p>
-              <p className="text-2xl font-bold">{dummyClass.tasks}</p>
-            </div>
-          </div>
-
-          {/* Schedule */}
-          <div className="mt-6 max-w-xl">
-            <div className="bg-white/10 backdrop-blur rounded-lg p-4 border border-white/20 flex items-start gap-4">
-              <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center text-white">
-                <IconCalendar />
-              </div>
-              <div className="flex-1">
-                <p className="text-sm text-purple-100 font-semibold mb-2">Jadwal Kelas</p>
-                <div className="grid grid-cols-1 gap-2">
-                  {dummyClass.schedule.map((s, idx) => (
-                    <div key={idx} className="flex items-center justify-between text-sm text-purple-50">
-                      <div className="font-medium">{s.day} • {s.time}</div>
-                      <div className="text-xs text-purple-100/80">{s.mode} · {s.location}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+          <div className="flex flex-col sm:flex-row sm:items-end gap-6 justify-between">
+            <div>
+              <span className="inline-block px-3 py-1 bg-white/20 text-white text-xs font-bold rounded-full mb-3 backdrop-blur-sm border border-white/10">
+                {dummyClass.category}
+              </span>
+              <h1 className="text-3xl sm:text-4xl font-extrabold text-white mb-2 leading-tight">
+                {dummyClass.name}
+              </h1>
+              <p className="text-white/80 text-base font-medium flex items-center gap-2">
+                <span className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-xs font-bold">
+                  {dummyClass.icon}
+                </span>
+                Pengajar: {dummyClass.instructor}
+              </p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-20">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="flex gap-2 overflow-x-auto">
+      {/* ── Info Cards (Overlapping Banner) ── */}
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 -mt-16 relative z-20 w-full mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          
+          {/* Main Info Card */}
+          <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col justify-center">
+            <p className="text-gray-600 text-sm leading-relaxed mb-6">
+              {dummyClass.description}
+            </p>
+            <div className="grid grid-cols-3 gap-4 border-t border-gray-50 pt-4">
+              <div>
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Materi</p>
+                <p className="text-2xl font-extrabold text-gray-900">{dummyClass.materials}</p>
+              </div>
+              <div>
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Tugas</p>
+                <p className="text-2xl font-extrabold text-gray-900">{dummyClass.tasks}</p>
+              </div>
+              <div>
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Anggota</p>
+                <p className="text-2xl font-extrabold text-gray-900">{dummyClass.students}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Schedule Card */}
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+            <h3 className="text-sm font-bold text-gray-800 mb-4 flex items-center gap-2">
+              <span className="p-1.5 rounded-lg bg-indigo-50 text-indigo-600">
+                <IconCalendar />
+              </span>
+              Jadwal Kelas
+            </h3>
+            <div className="space-y-4">
+              {dummyClass.schedule.map((s, idx) => (
+                <div key={idx} className="flex gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-gray-50 flex flex-col items-center justify-center shrink-0 border border-gray-100">
+                    <span className="text-[10px] font-bold text-gray-500 uppercase">{s.day.slice(0, 3)}</span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold text-gray-700 flex items-center gap-1.5 mb-1">
+                      <IconClock /> {s.time}
+                    </p>
+                    <p className="text-xs text-gray-500 flex items-center gap-1.5">
+                      {s.mode === "Online" ? <IconVideo /> : <IconLocation />}
+                      <span className="truncate">{s.location}</span>
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      {/* ── Tabs Navigation ── */}
+      <div className="bg-white border-b border-gray-200 sticky top-0 z-30 shadow-sm">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6">
+          <div className="flex gap-6 overflow-x-auto scrollbar-hide">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-4 sm:px-6 py-4 text-sm font-semibold border-b-2 transition-colors whitespace-nowrap ${
+                className={`flex items-center gap-2 py-4 text-sm font-bold border-b-2 transition-all whitespace-nowrap ${
                   activeTab === tab.id
-                    ? "border-purple-600 text-purple-600"
-                    : "border-transparent text-gray-600 hover:text-gray-900"
+                    ? "border-violet-600 text-violet-700"
+                    : "border-transparent text-gray-500 hover:text-gray-800 hover:border-gray-300"
                 }`}
               >
                 {tab.icon}
@@ -147,8 +199,8 @@ export default function ClassDetailPage({ params }: { params: { id: string } }) 
         </div>
       </div>
 
-      {/* Content */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+      {/* ── Tab Content ── */}
+      <div className="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 py-6">
         {activeTab === "materi" && <ClassMaterialTab classId={dummyClass.id} />}
         {activeTab === "tugas" && <ClassTaskTab classId={dummyClass.id} />}
         {activeTab === "orang" && <ClassMembersTab classId={dummyClass.id} />}

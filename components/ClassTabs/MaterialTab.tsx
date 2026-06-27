@@ -52,14 +52,6 @@ export default function ClassMaterialTab({ classId }: { classId: string }) {
 
   return (
     <div>
-      {/* Add Material Button */}
-      <div className="mb-6">
-        <button className="inline-flex items-center gap-2 px-6 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition-colors shadow-sm">
-          <IconPlus />
-          Tambah Materi
-        </button>
-      </div>
-
       {/* Materials Grid */}
       <div className="grid gap-4">
         {materials.map((material) => (
