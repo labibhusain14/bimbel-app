@@ -34,6 +34,7 @@ export async function getTeacherDashboardData() {
       start_time,
       end_time,
       lokasi,
+      join_code,
       status,
       subjects ( name ),
       student_classrooms ( count )
@@ -57,6 +58,7 @@ export async function getTeacherDashboardData() {
     return {
       id: c.id,
       title: c.name,
+      joinCode: c.join_code,
       category: subjectName ?? "Umum",
       scheduleDay: c.schedule_day,
       scheduleTime: c.start_time ? `${c.start_time.substring(0,5)} - ${c.end_time?.substring(0,5)}` : "-",

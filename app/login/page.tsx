@@ -35,7 +35,7 @@ export default function LoginPage() {
       // Redirect berdasarkan role
       const role = data.user?.role;
       if (role === "admin") router.push("/dashboard/admin");
-      else if (role === "teacher") router.push("/dashboard/teacher");
+      else if (role === "teacher") router.push("/dashboard");
       else router.push("/dashboard");
     } catch {
       setError("Gagal terhubung ke server. Coba lagi.");

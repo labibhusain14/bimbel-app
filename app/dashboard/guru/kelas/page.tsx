@@ -50,6 +50,7 @@ export default async function TeacherClassList() {
       start_time,
       end_time,
       lokasi,
+      join_code,
       status,
       subjects ( name ),
       student_classrooms ( count )
@@ -68,9 +69,6 @@ export default async function TeacherClassList() {
           <h1 className="text-2xl font-bold text-gray-800">Kelas Saya</h1>
           <p className="text-gray-500 text-sm mt-1">Kelola kelas, materi, dan tugas untuk siswa Anda.</p>
         </div>
-        <button className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-xl text-sm font-bold hover:bg-purple-700 transition-colors shadow-sm">
-          <IconPlus /> Buat Kelas Baru
-        </button>
       </div>
 
       {/* ── Active Classes ── */}
@@ -99,6 +97,11 @@ export default async function TeacherClassList() {
                   </div>
                   
                   <h3 className="font-bold text-gray-800 text-lg mb-1 leading-tight group-hover:text-purple-600 transition-colors">{c.name}</h3>
+                  {c.join_code && (
+                    <div className="text-xs text-gray-500 mb-2 bg-gray-50 inline-block px-2 py-1 rounded border border-gray-100 w-fit">
+                      Code: <span className="font-mono font-bold text-gray-700 tracking-wider">{c.join_code}</span>
+                    </div>
+                  )}
                   
                   <div className="mt-auto pt-4 flex items-center justify-between">
                     <div className="text-xs text-gray-500 flex items-center gap-1.5">

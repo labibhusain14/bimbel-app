@@ -41,14 +41,10 @@ export default function TeacherDashboard({ data }: { data: any }) {
       <div className="bg-gradient-to-r from-purple-600 to-indigo-700 rounded-3xl p-6 sm:p-8 sm:py-10 text-white shadow-lg relative overflow-hidden flex flex-col md:flex-row items-center gap-6">
         <div className="absolute -right-20 -top-20 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
         <div className="absolute -left-10 -bottom-10 w-40 h-40 bg-indigo-400/20 rounded-full blur-2xl"></div>
-        
+
         <div className="flex-1 relative z-10 text-center md:text-left">
-          <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-semibold tracking-wide mb-4">
-            <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
-            DASHBOARD GURU
-          </div>
           <h1 className="text-3xl sm:text-4xl font-bold mb-2">
-            Selamat datang, Guru {user.full_name?.split(" ")[0] || "Hebat"}! 👨‍🏫
+            Selamat datang, Ibu {user.full_name?.split(" ")[0] || "Hebat"}!
           </h1>
           <p className="text-purple-100 max-w-xl text-sm sm:text-base mb-6">
             Hari ini ada {stats.todaysClassesCount} kelas yang perlu diajar dan {stats.unreviewedCount} tugas yang belum Anda nilai.
@@ -91,7 +87,7 @@ export default function TeacherDashboard({ data }: { data: any }) {
               Lihat Semua
             </Link>
           </div>
-          
+
           <div className="grid sm:grid-cols-2 gap-4">
             {courses.slice(0, 4).map((c: any) => (
               <div key={c.id} className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-shadow group relative overflow-hidden flex flex-col h-full">
@@ -104,9 +100,14 @@ export default function TeacherDashboard({ data }: { data: any }) {
                     <IconUsers /> {c.students}
                   </div>
                 </div>
-                
+
                 <h3 className="font-bold text-gray-800 text-lg mb-1 leading-tight">{c.title}</h3>
-                
+                {c.joinCode && (
+                  <div className="text-xs text-gray-500 mb-2 bg-gray-50 inline-block px-2 py-1 rounded border border-gray-100 w-fit">
+                    Code: <span className="font-mono font-bold text-gray-700 tracking-wider">{c.joinCode}</span>
+                  </div>
+                )}
+
                 <div className="mt-auto pt-4 flex items-center justify-between">
                   <div className="text-xs text-gray-500 flex items-center gap-1.5">
                     <IconCalendar />
@@ -133,7 +134,7 @@ export default function TeacherDashboard({ data }: { data: any }) {
 
         {/* ── Sidebar (Right) ── */}
         <div className="space-y-6">
-          
+
           {/* Today's Schedule */}
           <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
             <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
@@ -170,7 +171,7 @@ export default function TeacherDashboard({ data }: { data: any }) {
                 Semua
               </Link>
             </div>
-            
+
             <div className="space-y-3">
               {recentSubmissions.length > 0 ? (
                 recentSubmissions.map((s: any) => (

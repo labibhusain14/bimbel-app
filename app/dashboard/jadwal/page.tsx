@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { getJadwalData, ScheduleItem } from "@/app/actions/jadwal";
+import Link from "next/link";
 
 // ── Color palettes ─────────────────────────────────────────────
 const colorList = [
@@ -70,12 +71,14 @@ export default function JadwalPage() {
   });
   const [totalSessions, setTotalSessions] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [userRole, setUserRole] = useState<string>("student");
 
   useEffect(() => {
     getJadwalData().then((data) => {
       if (data) {
         setScheduleByDay(data.scheduleByDay);
         setTotalSessions(data.totalSessions);
+        if (data.user) setUserRole(data.user.role);
       }
       setLoading(false);
     });
@@ -222,12 +225,12 @@ export default function JadwalPage() {
                   </div>
 
                   {/* Card */}
-                  <div className="flex-1 mb-3">
-                    <div className={`relative bg-white rounded-xl border-l-4 ${color.border} shadow-sm hover:shadow-md transition-shadow p-4 border border-gray-100`}>
+                  <Link href={userRole === "teacher" ? `/dashboard/guru/kelas/${item.classroomId}` : `/dashboard/kelas/${item.classroomId}`} className="flex-1 mb-3 block group">
+                    <div className={`relative bg-white rounded-xl border-l-4 ${color.border} shadow-sm group-hover:shadow-md transition-shadow p-4 border border-gray-100`}>
                       {/* Top row */}
                       <div className="flex items-start justify-between gap-2 mb-2">
                         <div>
-                          <h3 className="text-sm font-bold text-gray-800 leading-snug">{item.course}</h3>
+                          <h3 className="text-sm font-bold text-gray-800 leading-snug group-hover:text-purple-600 transition-colors">{item.course}</h3>
                           <span className="text-xs text-gray-400">{item.subject}</span>
                         </div>
                         <span className={`shrink-0 text-xs font-semibold px-2 py-0.5 rounded-full ${
@@ -269,7 +272,7 @@ export default function JadwalPage() {
 
                       <div className={`absolute left-0 top-1/2 -translate-y-1/2 -translate-x-[calc(100%+1rem)] w-2.5 h-2.5 rounded-full border-2 border-white shadow ${color.dot}`} />
                     </div>
-                  </div>
+                  </Link>
                 </div>
 
                 {/* End time row — hanya untuk item terakhir */}

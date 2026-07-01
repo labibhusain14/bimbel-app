@@ -3,6 +3,7 @@
 import { useState, useEffect, use } from "react";
 import ClassMaterialTab from "@/components/ClassTabs/MaterialTab";
 import ClassTaskTab from "@/components/ClassTabs/TaskTab";
+import ClassGradingTab from "@/components/ClassTabs/GradingTab";
 import ClassMembersTab from "@/components/ClassTabs/MembersTab";
 import { getClassDetail } from "@/app/actions/kelas";
 
@@ -117,6 +118,12 @@ export default function ClassDetailPage({ params }: { params: Promise<{ id: stri
                 Pengajar: {classData.instructor}
               </p>
             </div>
+            {classData.joinCode && (
+              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl px-4 py-2 flex flex-col sm:items-end">
+                <span className="text-white/70 text-xs font-semibold uppercase tracking-wide">Code</span>
+                <span className="text-white font-mono text-xl font-bold tracking-widest select-all">{classData.joinCode}</span>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -190,8 +197,8 @@ export default function ClassDetailPage({ params }: { params: Promise<{ id: stri
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center gap-2 py-4 text-sm font-bold border-b-2 transition-all whitespace-nowrap ${activeTab === tab.id
-                    ? "border-violet-600 text-violet-700"
-                    : "border-transparent text-gray-500 hover:text-gray-800 hover:border-gray-300"
+                  ? "border-violet-600 text-violet-700"
+                  : "border-transparent text-gray-500 hover:text-gray-800 hover:border-gray-300"
                   }`}
               >
                 {tab.icon}
@@ -206,11 +213,7 @@ export default function ClassDetailPage({ params }: { params: Promise<{ id: stri
       <div className="flex-1 max-w-4xl mx-auto w-full px-4 sm:px-6 py-6">
         {activeTab === "materi" && <ClassMaterialTab classId={classData.id} materials={classData.materialsList} />}
         {activeTab === "tugas" && <ClassTaskTab classId={classData.id} tasks={classData.tasksList} />}
-        {activeTab === "penilaian" && (
-          <div className="bg-white rounded-2xl border border-gray-100 p-8 text-center text-gray-500 shadow-sm">
-            Halaman penilaian sedang dalam pengembangan.
-          </div>
-        )}
+        {activeTab === "penilaian" && <ClassGradingTab classId={classData.id} />}
         {activeTab === "orang" && <ClassMembersTab classId={classData.id} members={classData.membersList} />}
       </div>
     </div>

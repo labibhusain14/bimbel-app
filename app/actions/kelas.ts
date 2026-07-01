@@ -21,6 +21,7 @@ export async function getClassDetail(classId: string) {
     .select(`
       id,
       name,
+      join_code,
       schedule_day,
       start_time,
       end_time,
@@ -147,6 +148,7 @@ export async function getClassDetail(classId: string) {
   return {
     id: cls.id,
     name: cls.name,
+    joinCode: cls.join_code,
     category: subjectName,
     instructor: teacherName,
     description,
@@ -199,4 +201,92 @@ export async function getMaterialDetail(materialId: string) {
     type: data.file_url && data.file_url.includes(".mp4") ? "video" : "pdf",
     date: new Date(data.created_at).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" }),
   };
+}
+
+export async function getClassSubmissions(classId: string) {
+  const supabase = createAdminClient();
+  
+  // 1. Dapatkan daftar meeting dari kelas ini
+  const { data: meetings } = await supabase
+    .schema("bimbel")
+    .from("classroom_meetings")
+    .select("id, classrooms(name)")
+    .eq("classroom_id", classId);
+
+  const meetingIds = meetings?.map((m: any) => m.id) || [];
+  let allSubmissions: any[] = [];
+
+  if (meetingIds.length > 0) {
+    const { data: assignments } = await supabase
+      .schema("bimbel")
+      .from("assignments")
+      .select(`
+        id, 
+        title,
+        meeting_id,
+        assignment_submissions (
+          id,
+          status,
+          submitted_at,
+          score,
+          users ( full_name )
+        )
+      `)
+      .in("meeting_id", meetingIds);
+
+    if (assignments) {
+      assignments.forEach((a: any) => {
+        const m = meetings?.find((m: any) => m.id === a.meeting_id);
+        const subs = Array.isArray(a.assignment_submissions) ? a.assignment_submissions : [];
+        
+        subs.forEach((s: any) => {
+          const studentName = Array.isArray(s.users) ? s.users[0]?.full_name : s.users?.full_name;
+          const className = Array.isArray(m?.classrooms) ? (m?.classrooms as any)[0]?.name : (m?.classrooms as any)?.name;
+          
+          allSubmissions.push({
+            id: s.id,
+            assignmentId: a.id,
+            assignmentTitle: a.title,
+            className: className || "Kelas",
+            studentName: studentName || "Siswa",
+            submittedAt: s.submitted_at,
+            status: s.status,
+            score: s.score
+          });
+        });
+      });
+    }
+  }
+
+  // Sort by status (unreviewed first), then by date
+  allSubmissions.sort((a, b) => {
+    const isAUnreviewed = a.status === "submitted" || a.status === "late";
+    const isBUnreviewed = b.status === "submitted" || b.status === "late";
+    
+    if (isAUnreviewed && !isBUnreviewed) return -1;
+    if (!isAUnreviewed && isBUnreviewed) return 1;
+    
+    return new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime();
+  });
+
+  return allSubmissions;
+}
+
+export async function gradeSubmission(submissionId: string, score: number) {
+  const supabase = createAdminClient();
+  const { error } = await supabase
+    .schema("bimbel")
+    .from("assignment_submissions")
+    .update({ 
+      score: score,
+      status: "graded",
+      updated_at: new Date().toISOString()
+    })
+    .eq("id", submissionId);
+    
+  if (error) {
+    console.error("Error grading submission:", error);
+    return { success: false, error: error.message };
+  }
+  return { success: true };
 }

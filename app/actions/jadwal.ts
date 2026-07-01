@@ -38,13 +38,13 @@ export async function getJadwalData() {
 
   const supabase = createAdminClient();
 
-  // Ambil semua kelas aktif yang diikuti siswa ini (beserta jadwalnya)
-  const { data: studentClasses, error } = await supabase
-    .schema("bimbel")
-    .from("student_classrooms")
-    .select(`
-      classroom_id,
-      classrooms (
+  let classes: any[] = [];
+
+  if (user.role === "teacher") {
+    const { data: teacherClasses, error } = await supabase
+      .schema("bimbel")
+      .from("classrooms")
+      .select(`
         id,
         name,
         schedule_day,
@@ -53,14 +53,40 @@ export async function getJadwalData() {
         lokasi,
         subjects ( name ),
         users ( full_name )
-      )
-    `)
-    .eq("student_id", user.id)
-    .eq("status", "active");
+      `)
+      .eq("teacher_id", user.id)
+      .eq("status", "active");
 
-  if (error) {
-    console.error("Fetch jadwal error:", error);
-    return null;
+    if (error) {
+      console.error("Fetch jadwal teacher error:", error);
+      return null;
+    }
+    classes = teacherClasses || [];
+  } else {
+    const { data: studentClasses, error } = await supabase
+      .schema("bimbel")
+      .from("student_classrooms")
+      .select(`
+        classroom_id,
+        classrooms (
+          id,
+          name,
+          schedule_day,
+          start_time,
+          end_time,
+          lokasi,
+          subjects ( name ),
+          users ( full_name )
+        )
+      `)
+      .eq("student_id", user.id)
+      .eq("status", "active");
+
+    if (error) {
+      console.error("Fetch jadwal student error:", error);
+      return null;
+    }
+    classes = (studentClasses || []).map((sc) => sc.classrooms).filter(Boolean);
   }
 
   // Bangun map: dayIndex => ScheduleItem[]
@@ -68,8 +94,7 @@ export async function getJadwalData() {
     0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: [],
   };
 
-  studentClasses?.forEach((sc) => {
-    const c = sc.classrooms as any;
+  classes.forEach((c: any) => {
     if (!c || !c.schedule_day) return;
 
     const dayKey = (c.schedule_day as string).toLowerCase().trim();
@@ -81,7 +106,7 @@ export async function getJadwalData() {
     const isOnline = !c.lokasi || c.lokasi.toLowerCase().includes("zoom") || c.lokasi.toLowerCase().includes("online") || c.lokasi.toLowerCase().includes("meet");
 
     const item: ScheduleItem = {
-      id: sc.classroom_id,
+      id: c.id,
       classroomId: c.id,
       startTime: padTime(c.start_time),
       endTime: padTime(c.end_time),
